@@ -58,5 +58,5 @@ export async function create() {
         })
     });
 
-    app.listen(process.env.WEBSERVER_PORT, () => {  console.log(`Server listening on http://localhost:${process.env.WEBSERVER_PORT}`); })
+    app.listen(process.env.PORT, () => {  console.log(`Server listening on http://localhost:${process.env.PORT}`); })
 }

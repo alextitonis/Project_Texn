@@ -24,46 +24,25 @@ export class postgres {
         await this.client.query(query)
     }
 
-    async login(username: string, password: string, errorCallback: Function, callback: Function) {
+    async login(username: string, password: string) {
         const query = "SELECT * FROM users WHERE username=$1 AND password=$2"
         const values = [username, password]
 
-        await postgres.getInstance.client.query(query, values, (err, res) => {
-            if (err) {
-                console.log(err)
-                if (errorCallback)
-                errorCallback()
-            } else {
-                if (callback)
-                callback(res && res.rows && res.rows.length > 0)
-            }
-        });
+        const res = await postgres.getInstance.client.query(query, values);
+        return res && res.rows && res.rows.length > 0;
     }
-    async register(email: string, username: string, password: string, errorCallback: Function, callback: Function) {
+    async register(email: string, username: string, password: string) {
         const query = "SELECT * FROM users WHERE email=$1 OR username=$2"
         const values = [email, username]
 
-        await postgres.getInstance.client.query(query, values, (err, res) => {
-            if (err) {
-                console.log(err)
-                if (errorCallback)
-                errorCallback()
-            } else {
-                const query2 = "INSERT INTO users(username, email, password) VALUES($1, $2, $3)"
-                const values2 = [email, username, password]
+        const res = await postgres.getInstance.client.query(query, values);
+        if (res && res.rows && res.rows.length > 0) return false;
+        
+        const query2 = "INSERT INTO users(email, username, password) VALUES($1, $2, $3)"
+        const values2 = [email, username, password]
 
-                postgres.getInstance.client.query(query2, values2, (err, res) => {
-                    if (err) {
-                        console.log(err)
-                        if (errorCallback)
-                        errorCallback()
-                    } else {
-                        if (callback)
-                        callback()
-                    }
-                })
-            }
-        })
+        await postgres.getInstance.client.query(query2, values2);
+        return true;
     }
 
     async forgotPassword(email: string, callback: Function, errorCallback: Function) {

@@ -16,25 +16,23 @@ export async function create() {
     app.route('/login').post(async (req: express.Request, res: express.Response) => {
         const username = req.body.username
         const password = req.body.password
-        await postgres.getInstance.login(username, password, () => {
-            res.status(402).send(JSON.stringify({ result: 'fail' }));
-        }, (found) => {
-            if (found) {
-                res.status(200).send(JSON.stringify({ result: 'success' }));
-            } else {
-                res.status(200).send(JSON.stringify({ result: 'not found' }));
-            }
-        })
+        const resp = await postgres.getInstance.login(username, password);
+        if (resp) {
+            res.status(200).send(JSON.stringify({ result: 'success' }));
+        } else { 
+            res.status(200).send(JSON.stringify({ result: 'not found' }));
+        }
     });
     app.route('/registration').post(async (req: express.Request, res: express.Response) => {
         const username = req.body.username
         const email = req.body.email
         const password = req.body.password
-        await postgres.getInstance.register(email, username, password, () => {
-            res.status(402).send(JSON.stringify({ result: 'fail' }));
-        }, () => {
+        const resp = await postgres.getInstance.register(email, username, password);
+        if (resp) {
             res.status(200).send(JSON.stringify({ result: 'success' }));
-        })
+        } else {
+            res.status(402).send(JSON.stringify({ result: 'fail' }));
+        }
     });
     app.route('/forgot_password').post(async (req: express.Request, res: express.Response) => { 
         const email = req.body.email

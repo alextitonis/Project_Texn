@@ -13,10 +13,10 @@ export async function create() {
     app.get('/test', (req, res) => {
         res.send('Hello World I am running locally');
     });
-    app.route('/login').post((req: express.Request, res: express.Response) => {
+    app.route('/login').post(async (req: express.Request, res: express.Response) => {
         const username = req.body.username
         const password = req.body.password
-        postgres.getInstance.login(username, password, () => {
+        await postgres.getInstance.login(username, password, () => {
             res.status(402).send(JSON.stringify({ result: 'fail' }));
         }, (found) => {
             if (found) {
@@ -26,34 +26,34 @@ export async function create() {
             }
         })
     });
-    app.route('/registration').post((req: express.Request, res: express.Response) => {
+    app.route('/registration').post(async (req: express.Request, res: express.Response) => {
         const username = req.body.username
         const email = req.body.email
         const password = req.body.password
-        postgres.getInstance.register(email, username, password, () => {
+        await postgres.getInstance.register(email, username, password, () => {
             res.status(402).send(JSON.stringify({ result: 'fail' }));
         }, () => {
             res.status(200).send(JSON.stringify({ result: 'success' }));
         })
     });
-    app.route('/forgot_password').post((req: express.Request, res: express.Response) => { 
+    app.route('/forgot_password').post(async (req: express.Request, res: express.Response) => { 
         const email = req.body.email
-        postgres.getInstance.forgotPassword(email, (password) => {
+        await postgres.getInstance.forgotPassword(email, (password) => {
             res.status(200).send(JSON.stringify({ result: 'success' }));
             emailManager.getInstance.sendEmail(email, 'Forgot Password', 'Your password is: ' + password);
         }, () => {
             res.status(200).send(JSON.stringify({ result: 'fail' }));
         })
     });
-    app.route('/artistBiography').post((req: express.Request, res: express.Response) => { 
+    app.route('/artistBiography').post(async(req: express.Request, res: express.Response) => { 
         const artist = req.body.artist
-        audioDB.getInstance.requestBiography(artist, async (biography, img) => { 
+        await audioDB.getInstance.requestBiography(artist, async (biography, img) => { 
             res.status(200).send(JSON.stringify({ result: 'success', artist: biography, img: img }));
         })
     });
-    app.route('/artistAlbums').post((req: express.Request, res: express.Response) => { 
+    app.route('/artistAlbums').post(async (req: express.Request, res: express.Response) => { 
         const artist = req.body.artist
-        audioDB.getInstance.requestAlbums(artist, async (albums) => { 
+        await audioDB.getInstance.requestAlbums(artist, async (albums) => { 
             res.status(200).send(JSON.stringify({ result: 'success', artist: albums }));
         })
     });

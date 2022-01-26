@@ -9,9 +9,19 @@ export class postgres {
     }
 
     async connect() {
-        this.client = new Client();
-        this.client.connect();
+        this.client = new Client({
+            user: process.env.PGUSER,
+            password: process.env.PGPASSWORD,
+            database: process.env.PGDATABASE,
+            port: process.env.PGPORT,
+            host: process.env.PGHOST,
+            ssl: process.env.PGSSL ? {
+                rejectUnauthorized: false
+            } : false
+        });
         const res = await this.client.query('SELECT NOW()')
+        const query = 'CREATE TABLE IF NOT EXISTS users(username varchar(255), email varchar(255), password varchar(255))';
+        await this.client.query(query)
     }
 
     async login(username: string, password: string, errorCallback: Function, callback: Function) {

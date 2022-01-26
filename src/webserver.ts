@@ -27,6 +27,7 @@ export async function create() {
         const username = req.body.username
         const email = req.body.email
         const password = req.body.password
+        console.log('trying to register');
         const resp = await postgres.getInstance.register(email, username, password);
         if (resp) {
             res.status(200).send(JSON.stringify({ result: 'success' }));

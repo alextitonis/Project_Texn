@@ -22,8 +22,6 @@ export class postgres {
         console.log('connecting to db');
         const res = await this.client.query('SELECT NOW()')
         console.log(res);
-        const query = 'CREATE TABLE IF NOT EXISTS users(username varchar(255), email varchar(255), password varchar(255))';
-        await this.client.query(query)
     }
 
     async login(username: string, password: string) {

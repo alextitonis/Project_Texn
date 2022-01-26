@@ -34,8 +34,10 @@ export class postgres {
     async register(email: string, username: string, password: string) {
         const query = "SELECT * FROM users WHERE email=$1 OR username=$2"
         const values = [email, username]
+        console.log(query, values);
 
         const res = await postgres.getInstance.client.query(query, values);
+        console.log(res);
         if (res && res.rows && res.rows.length > 0) return false;
         
         const query2 = "INSERT INTO users(email, username, password) VALUES($1, $2, $3)"
